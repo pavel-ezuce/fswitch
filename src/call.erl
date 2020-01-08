@@ -49,7 +49,7 @@ match_for(Key) ->
 
 start_link(Id, UUID) ->
 	gen_server:start_link(?MODULE, [Id, UUID], []);
-start_link(Id, UUID) ->
+start_link(Id, UUID, handlecall) ->
 	gen_server:start_link(?MODULE, [Id, UUID, handlecall], []).
 
 % gproc api
@@ -127,7 +127,7 @@ init([Id, UUID]) ->
 	{ok, EvLog} = event_log:start_link(),
 	{ok, #state{fs=Id, uuid = UUID, event_log = EvLog}};
 init([Id, UUID, handlecall]) ->
-	lager:info("~s start, fs:~p", [UUID, Id]),
+	lager:info("~s start handlecall, fs:~p", [UUID, Id]),
 	gproc:reg({n, l, {?MODULE, UUID}}),
 	sync_state(self()),
 	{ok, EvLog} = event_log:start_link(),
