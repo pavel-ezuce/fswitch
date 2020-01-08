@@ -129,6 +129,7 @@ init([Id, UUID]) ->
 init([Id, UUID, handlecall]) ->
 	lager:info("~s start handlecall, fs:~p", [UUID, Id]),
 	gproc:reg({n, l, {?MODULE, UUID}}),
+	freeswitch:handlecall(Id, UUID),
 	sync_state(self()),
 	{ok, EvLog} = event_log:start_link(),
 	{ok, #state{fs=Id, uuid = UUID, event_log = EvLog}}.
