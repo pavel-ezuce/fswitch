@@ -48,7 +48,7 @@ match_for(Key) ->
 	qlc:e(Q).
 
 start_link(Id, UUID) ->
-	gen_server:start_link(?MODULE, [Id, UUID], []);
+	gen_server:start_link(?MODULE, [Id, UUID], []).
 start_link(Id, UUID, handlecall) ->
 	gen_server:start_link(?MODULE, [Id, UUID, handlecall], []).
 
