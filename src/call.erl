@@ -4,7 +4,7 @@
 -include_lib("stdlib/include/qlc.hrl").
 
 -export([
-	start_link/2, pid/1, tuple/1, alive/1, link_process/2, wait_hangup/1,
+	start_link/2, start_link/3, pid/1, tuple/1, alive/1, link_process/2, wait_hangup/1,
 	subscribe/2, subscribe/3, unsubscribe/2, unsubscribe/3,
 	vars/1, variables/1,
 	hangup/1, answer/1, park/1, break/1,
@@ -48,7 +48,9 @@ match_for(Key) ->
 	qlc:e(Q).
 
 start_link(Id, UUID) ->
-	gen_server:start_link(?MODULE, [Id, UUID], []).
+	gen_server:start_link(?MODULE, [Id, UUID], []);
+start_link(Id, UUID) ->
+	gen_server:start_link(?MODULE, [Id, UUID, handlecall], []).
 
 % gproc api
 tuple(UUID) -> {?MODULE, UUID}.
@@ -119,6 +121,12 @@ wait_event_now(Id, Match, Timeout) ->
 sync_state(Pid) when is_pid(Pid) -> Pid ! sync_state.
 
 init([Id, UUID]) ->
+	lager:info("~s start, fs:~p", [UUID, Id]),
+	gproc:reg({n, l, {?MODULE, UUID}}),
+	sync_state(self()),
+	{ok, EvLog} = event_log:start_link(),
+	{ok, #state{fs=Id, uuid = UUID, event_log = EvLog}};
+init([Id, UUID, handlecall]) ->
 	lager:info("~s start, fs:~p", [UUID, Id]),
 	gproc:reg({n, l, {?MODULE, UUID}}),
 	sync_state(self()),
