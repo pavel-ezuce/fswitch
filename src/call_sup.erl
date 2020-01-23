@@ -89,7 +89,7 @@ handle_call({originate, FsId, URL, Exten, Opts}, _From, S=#state{template=T, job
 		{fun with_uuid/2, [UUID]},
 		{fun with_timeout/2, [proplists:get_value(originate_timeout, Opts, 5)]}
 	]),
-	{ok, Job} = fswitch:bgapi(FsId, "originate ~s~s ~s", [fswitch:stringify_opts(Opts1, curly), template(T, URL), Exten]),
+	{ok, Job} = fswitch:bgapi(FsId, "originate ~s~s;transport=tcp ~s", [fswitch:stringify_opts(Opts1, curly), template(T, URL), Exten]),
 	{reply, UUID, S#state{ jobs = J#{ Job => {FsId, UUID} } }};
 
 handle_call({set, UUID, Vars, Variables}, _From, S=#state{call_data=Pid}) ->
